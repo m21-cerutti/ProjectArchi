@@ -24,9 +24,14 @@ typedef enum { R_ARG, M_ARG, I_ARG, NO_ARG } arg_t;
  * On peut réorganiser et simplifier cette liste
  * mais il faut alors recompiler tous les fichiers yo
  */
-typedef enum { I_NOP, I_HALT, I_RRMOVL, I_IRMOVL, I_RMMOVL, I_MRMOVL,
-	       I_ALU, I_JXX, I_CALL, I_RET, I_PUSHL, I_POPL,
-	       I_ALUI, I_LEAVE, I_JREG, I_JMEM, I_POP2, I_LOOP } itype_t;
+typedef enum { I_NOP, I_HALT, I_RRMOVL, I_IRMOVL, I_RMMOVL, 
+	       I_ALU, I_JXX,  I_PUSHL, 
+	       I_ALUI, I_JMEM ,I_LOOP, I_JREG, I_LEAVE, I_POP2 } itype_t;
+
+#define I_MRMOVL I_RMMOVL
+#define I_POPL I_PUSHL
+#define I_CALL I_PUSHL
+#define I_RET I_PUSHL
 
 /* Different ALU operations */
 /* JB ajout SAL (shift arithmetic left) and SAR (shift arithmetic right) */

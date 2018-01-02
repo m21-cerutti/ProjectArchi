@@ -1,0 +1,9 @@
+	irmovl test,%eax
+	jreg %eax
+	irmovl 8,%eax
+	jmp end
+test:
+	irmovl 5,%eax
+end:
+	halt
+

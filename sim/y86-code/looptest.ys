@@ -1,0 +1,13 @@
+# Test of Push semantics for Y86
+	irmovl 5,%ecx		 
+	xorl %eax,%eax    
+loopstart:         
+	iaddl 1,%eax 
+	loop loopstart
+	jmp end
+end:
+	irmovl 5,%ecx
+loopfin:         
+	iaddl 1,%eax 
+	loop loopfin
+	halt

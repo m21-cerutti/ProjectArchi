@@ -1,8 +1,9 @@
-/* Grammar for Y86 Assembler */
+/* Grammar for Y86 Assembler*/
+ /*leave à rajouter*/
  #include "yas.h"
  unsigned int atoh(const char *);
 
-Instr         rrmovl|rmmovl|mrmovl|irmovl|addl|subl|andl|xorl|sall|sarl|jmp|jle|jl|je|jne|jge|jg|call|ret|pushl|popl|"."byte|"."word|"."long|"."pos|"."align|halt|nop|iaddl|isubl|iandl|ixorl|isall|isarl|leave|jreg|jmem
+Instr         rrmovl|rmmovl|mrmovl|irmovl|addl|subl|andl|xorl|sall|sarl|jmp|jle|jl|je|jne|jge|jg|call|ret|pushl|popl|"."byte|"."word|"."long|"."pos|"."align|halt|nop|iaddl|isubl|iandl|ixorl|isall|isarl|jreg|jmem|loop
 Letter        [a-zA-Z]
 Digit         [0-9]
 Ident         {Letter}({Letter}|{Digit}|_)*

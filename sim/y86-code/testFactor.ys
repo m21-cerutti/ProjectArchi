@@ -1,0 +1,17 @@
+	.pos 0
+	irmovl stack, %esp
+	irmovl 5, %eax
+	rmmovl %eax, stack
+	mrmovl stack, %ebx
+	irmovl 2, %eax
+	pushl %eax
+	popl %ebx
+	call data
+	halt
+
+	.pos 0x200
+data:
+	ret
+	
+	.pos 0x300
+stack:

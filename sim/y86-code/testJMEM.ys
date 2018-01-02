@@ -1,0 +1,11 @@
+	irmovl a,%eax
+	jmem 4(%eax)
+	irmovl 8,%eax
+	jmp end
+test:
+	irmovl 5,%eax
+end:
+	halt
+
+a:.long 0
+b:.long test

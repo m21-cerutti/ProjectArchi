@@ -14,7 +14,7 @@ extern int gui_mode;
 struct {
     char *name;
     int id;
-} reg_table[REG_NONE+1] = 
+} reg_table[REG_NONE+1] =
 {
     {"%eax",   REG_EAX},
     {"%ecx",   REG_ECX},
@@ -45,7 +45,7 @@ char *reg_name(reg_id_t id)
 	return reg_table[REG_NONE].name;
 }
 
-instr_t instruction_set[] = 
+instr_t instruction_set[] =
 {
     {"nop",    HPACK(I_NOP, 0), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
     {"halt",   HPACK(I_HALT, 0), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
@@ -53,7 +53,7 @@ instr_t instruction_set[] =
     /* arg1hi indicates number of bytes */
     {"irmovl", HPACK(I_IRMOVL, 0), 6, I_ARG, 2, 4, R_ARG, 1, 0 },
     {"rmmovl", HPACK(I_RMMOVL, 0), 6, R_ARG, 1, 1, M_ARG, 1, 0 },
-    {"mrmovl", HPACK(I_MRMOVL, 0), 6, M_ARG, 1, 0, R_ARG, 1, 1 },
+    {"mrmovl", HPACK(I_MRMOVL, 1), 6, M_ARG, 1, 0, R_ARG, 1, 1 },
     {"addl",   HPACK(I_ALU, A_ADD), 2, R_ARG, 1, 1, R_ARG, 1, 0 },
     {"subl",   HPACK(I_ALU, A_SUB), 2, R_ARG, 1, 1, R_ARG, 1, 0 },
     {"andl",   HPACK(I_ALU, A_AND), 2, R_ARG, 1, 1, R_ARG, 1, 0 },
@@ -69,10 +69,10 @@ instr_t instruction_set[] =
     {"jne",    HPACK(I_JXX, J_NE), 5, I_ARG, 1, 4, NO_ARG, 0, 0 },
     {"jge",    HPACK(I_JXX, J_GE), 5, I_ARG, 1, 4, NO_ARG, 0, 0 },
     {"jg",     HPACK(I_JXX, J_G), 5, I_ARG, 1, 4, NO_ARG, 0, 0 },
-    {"call",   HPACK(I_CALL, 0),    5, I_ARG, 1, 4, NO_ARG, 0, 0 },
-    {"ret",    HPACK(I_RET, 0), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
+    {"call",   HPACK(I_CALL, 2),    5, I_ARG, 1, 4, NO_ARG, 0, 0 },
+    {"ret",    HPACK(I_RET, 3), 1, NO_ARG, 0, 0, NO_ARG, 0, 0 },
     {"pushl",  HPACK(I_PUSHL, 0) , 2, R_ARG, 1, 1, NO_ARG, 0, 0 },
-    {"popl",   HPACK(I_POPL, 0) ,  2, R_ARG, 1, 1, NO_ARG, 0, 0 },
+    {"popl",   HPACK(I_POPL, 1) ,  2, R_ARG, 1, 1, NO_ARG, 0, 0 },
     /* JB versions immédiates de toutes les opérations */
     {"iaddl",  HPACK(I_ALUI, A_ADD),  6, I_ARG, 2, 4, R_ARG, 1, 0 },
     {"isubl",  HPACK(I_ALUI, A_SUB),  6, I_ARG, 2, 4, R_ARG, 1, 0 },
@@ -87,8 +87,8 @@ instr_t instruction_set[] =
     {"jreg",   HPACK(I_JREG, 0) , 2, R_ARG, 1, 1, NO_ARG, 0, 0 },
     {"jmem",   HPACK(I_JMEM, 0), 6, M_ARG, 1, 0, NO_ARG, 0, 0 },
 
-	/*WORK PROJECT LOOP*/
-	{ "loop",   HPACK(I_LOOP, 0), 5, I_ARG, 1, 4, NO_ARG, 0, 0 },
+/*FOR LOOP*/
+	{"loop",   HPACK(I_LOOP, 0), 5, I_ARG, 1, 4, NO_ARG, 0, 0 },
 
     /* For allocation instructions, arg1hi indicates number of bytes */
     {".byte",  0x00, 1, I_ARG, 0, 1, NO_ARG, 0, 0 },
@@ -203,7 +203,7 @@ int load_mem(mem_t m, FILE *infile, int report_error)
     char line[LINELEN];
 
     int index = 0;
-#endif /* HAS_GUI */   
+#endif /* HAS_GUI */
 
     while (fgets(buf, LINELEN, infile)) {
 	int cpos = 0;
@@ -217,7 +217,7 @@ int load_mem(mem_t m, FILE *infile, int report_error)
 
 	if (buf[cpos] != '0' ||
 	    (buf[cpos+1] != 'x' && buf[cpos+1] != 'X'))
-	    continue; /* Skip this line */      
+	    continue; /* Skip this line */
 	cpos+=2;
 
 	/* Get address */
@@ -252,7 +252,7 @@ int load_mem(mem_t m, FILE *infile, int report_error)
 #endif
 
 	/* Get code */
-	while (isxdigit((int)(ch=buf[cpos++])) && 
+	while (isxdigit((int)(ch=buf[cpos++])) &&
 	       isxdigit((int)(cl=buf[cpos++]))) {
 	    byte_t byte = 0;
 	    if (bytepos >= m->len) {
@@ -284,7 +284,7 @@ int load_mem(mem_t m, FILE *infile, int report_error)
 	    while (isspace((int)buf[cpos]))
 		cpos++;
 	    cpos++; /* Skip over '|' */
-	    
+
 	    index = 0;
 	    while ((c = buf[cpos++]) != '\0' && c != '\n') {
 		line[index++] = c;
@@ -293,7 +293,7 @@ int load_mem(mem_t m, FILE *infile, int report_error)
 	    if (!empty_line)
 		report_line(line_no++, addr, hexcode, line);
 	}
-#endif /* HAS_GUI */ 
+#endif /* HAS_GUI */
     }
     return byte_cnt;
 }
@@ -418,7 +418,7 @@ void set_reg_val(mem_t r, reg_id_t id, word_t val)
 #endif /* HAS_GUI */
     }
 }
-     
+
 void dump_reg(FILE *outfile, mem_t r) {
     reg_id_t id;
     for (id = 0; id < 8; id++) {
@@ -436,7 +436,7 @@ void dump_reg(FILE *outfile, mem_t r) {
 struct {
     char symbol;
     int id;
-} alu_table[A_NONE+1] = 
+} alu_table[A_NONE+1] =
 {
     {'+',   A_ADD},
     {'-',   A_SUB},
@@ -507,7 +507,7 @@ cc_t compute_cc(alu_t op, word_t argA, word_t argB)
 	ovf = FALSE;
     }
     return PACK_CC(zero,sign,ovf);
-    
+
 }
 
 char *cc_names[8] = {
@@ -597,7 +597,7 @@ bool_t take_branch(cc_t cc, jump_t bcond) {
     bool_t sf = GET_SF(cc);
     bool_t of = GET_OF(cc);
     bool_t jump = FALSE;
-    
+
     switch(bcond) {
     case J_YES:
 	jump = TRUE;
@@ -756,7 +756,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 			s->pc, hi1);
 	    return EXC_INSTR;
 	}
-	if (lo1 < 8) 
+	if (lo1 < 8)
 	    cval += get_reg_val(s->r, lo1);
 	val = get_reg_val(s->r, hi1);
 	if (!set_word_val(s->m, cval, val)) {
@@ -768,7 +768,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	}
 	s->pc = ftpc;
 	break;
-    case I_MRMOVL:
+    /*case I_MRMOVL:
 	if (!ok1) {
 	    if (error_file)
 		fprintf(error_file,
@@ -788,13 +788,13 @@ exc_t step_state(state_ptr s, FILE *error_file)
 			s->pc, hi1);
 	    return EXC_INSTR;
 	}
-	if (lo1 < 8) 
+	if (lo1 < 8)
 	    cval += get_reg_val(s->r, lo1);
 	if (!get_word_val(s->m, cval, &val))
 	    return EXC_ADDR;
 	set_reg_val(s->r, hi1, val);
 	s->pc = ftpc;
-	break;
+	break;*/
     case I_ALU:
 	if (!ok1) {
 	    if (error_file)
@@ -827,7 +827,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	else
 	    s->pc = ftpc;
 	break;
-    case I_CALL:
+    /*case I_CALL:
 	if (!ok1) {
 	    if (error_file)
 		fprintf(error_file,
@@ -851,7 +851,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	s->pc = cval;
 	break;
     case I_RET:
-	/* Return Instruction.  Pop address from stack */
+	//Return Instruction.  Pop address from stack
 	dval = get_reg_val(s->r, REG_ESP);
 	if (!get_word_val(s->m, dval, &val)) {
 	    if (error_file)
@@ -862,7 +862,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	}
 	set_reg_val(s->r, REG_ESP, dval + 4);
 	s->pc = val;
-	break;
+	break;*/
     case I_PUSHL:
 	if (!ok1) {
 	    if (error_file)
@@ -887,7 +887,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	}
 	s->pc = ftpc;
 	break;
-    case I_POPL:
+    /*case I_POPL:
 	if (!ok1) {
 	    if (error_file)
 		fprintf(error_file,
@@ -911,7 +911,7 @@ exc_t step_state(state_ptr s, FILE *error_file)
 	}
 	set_reg_val(s->r, hi1, val);
 	s->pc = ftpc;
-	break;
+	break;*/
     case I_LEAVE:
 	dval = get_reg_val(s->r, REG_EBP);
 	set_reg_val(s->r, REG_ESP, dval+4);

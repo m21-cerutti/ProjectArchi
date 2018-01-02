@@ -1,0 +1,47 @@
+                      | #/* $begin ncopy-ys */
+                      | ##################################################################
+                      | # ncopy.ys - Copy a src block of len ints to dst.
+                      | # Return the number of positive ints (>0) contained in src.
+                      | #
+                      | # Include your name and ID here.
+                      | #
+                      | # Describe how and why you modified the baseline code.
+                      | #
+                      | ##################################################################
+                      | 	# Function prologue. Do not modify.
+  0x000: a058         | ncopy:	pushl %ebp		# Save old frame pointer
+  0x002: 2045         | 	rrmovl %esp,%ebp	# Set up new frame pointer
+  0x004: a068         | 	pushl %esi		# Save callee-save regs
+  0x006: a038         | 	pushl %ebx
+  0x008: 503508000000 | 	mrmovl 8(%ebp),%ebx	# src
+  0x00e: 50150c000000 | 	mrmovl 12(%ebp),%ecx	# dst
+  0x014: 502510000000 | 	mrmovl 16(%ebp),%edx	# len
+                      | 
+                      | 	# Loop header
+  0x01a: 6366         | 	xorl %esi,%esi		# count = 0;
+  0x01c: 6222         | 	andl %edx,%edx		# len <= 0?
+  0x01e: 7157000000   | 	jle Done		# if so, goto Done:
+                      | 
+                      | 	# Loop body.
+  0x023: 500300000000 | Loop:	mrmovl (%ebx), %eax	# read val from src...
+  0x029: 400100000000 | 	rmmovl %eax, (%ecx)	# ...and store it to dst
+  0x02f: 6200         | 	andl %eax, %eax		# val <= 0?
+  0x031: 713e000000   | 	jle Npos		# if so, goto Npos:
+  0x036: 308701000000 | 	irmovl $1, %edi
+  0x03c: 6076         | 	addl %edi, %esi		# count++
+  0x03e: 308701000000 | Npos:	irmovl $1, %edi
+  0x044: 6172         | 	subl %edi, %edx		# len--
+  0x046: 308704000000 | 	irmovl $4, %edi
+  0x04c: 6073         | 	addl %edi, %ebx		# src++
+  0x04e: 6071         | 	addl %edi, %ecx		# dst++
+  0x050: 6222         | 	andl %edx,%edx		# len > 0?
+  0x052: 7623000000   | 	jg Loop			# if so, goto Loop:
+                      | 
+                      | 	# Function epilogue. Do not modify.
+  0x057: 2060         | Done:	rrmovl %esi, %eax
+  0x059: b038         | 	popl %ebx
+  0x05b: b068         | 	popl %esi
+  0x05d: 2054         | 	rrmovl %ebp, %esp
+  0x05f: b058         | 	popl %ebp
+  0x061: 90           | 	ret
+                      | #/* $end ncopy-ys */

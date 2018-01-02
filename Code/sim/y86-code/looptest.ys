@@ -1,0 +1,7 @@
+# Test of Loop semantics for Y86
+	xorl %eax,%eax
+	irmovl 5,%ecx
+looptest:
+	iaddl 1, %eax
+	loop looptest
+	halt
